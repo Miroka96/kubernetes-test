@@ -1,0 +1,52 @@
+mkdir kubernetes-test
+cd kubernetes-test
+git init
+
+git submodule add https://github.com/kubernetes-sigs/kubespray.git kubespray
+cd kubespray/
+git checkout tags/v2.8.1 -b mocc
+cd ..
+
+pip install -r kubespray/requirements.txt
+pip install ansible==2.6
+
+cp kubespray/inventory/sample/hosts.ini .
+declare -a IPS=(192.168.1.90 192.168.1.91 192.168.1.92)
+CONFIG_FILE=hosts.ini python3 kubespray/contrib/inventory_builder/inventory.py ${IPS[@]}
+# append node3 to kube-master
+nano hosts.ini
+
+sudo apt install virtualbox virtualbox-ext-pack
+
+# installing 3 virtual machines in virtualbox
+# - ubuntu-18.04.1-live-server-amd64.iso
+# - 20GB thin provisioned Virtualbox Image
+# - 2GB RAM
+# - 4 cores
+# - network bridged
+# - meth:cloudcomputing
+
+# further VM configurations:
+# - create static DHCP IP mapping in router (here: 192.168.1.90) - otherwise configure static IPs in the VMs :/
+# - reboot
+# - sudo visudo
+#   - in %sudo line: added 'NOPASSWD:' in front of last ALL
+# - apt update
+# - apt upgrade -y
+
+# further host configurations
+# - create proper DNS resolution
+#   - using hosts file: echo -e "192.168.1.90\tnode1\n192.168.1.91\tnode2\n192.168.1.92\tnode3\n" | sudo tee -a /etc/hosts
+#   - or configure the router to resolve DHCP client names via DNS
+# - copy SSH public keys (do it for node1-3)
+#   - ssh-copy-id meth@node1
+
+# clone the VM two times
+# - the MAC addresses need to be reinitialized/modified
+# - production environments require a reconfiguration of SSH to create new SSH server keys - don't care here
+# - for optimal deployment, the hostnames should be modified (otherwise the setup might fail - don't know)
+#   - sudo hostnamectl set-hostname node2
+#   - sudo sed -i "s/preserve_hostname: false/preserve_hostname: true/g" /etc/cloud/cloud.cfg
+
+# back on the host:
+ansible-playbook -i hosts.ini --become --become-user=root kubespray/cluster.yml
