@@ -1,0 +1,29 @@
+mkdir kubernetes-test
+cd kubernetes-test
+echo "# kubernetes-test" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/Miroka96/kubernetes-test.git
+fatal: remote origin already exists.
+git push -u origin master
+
+git submodule add https://github.com/kubernetes-sigs/kubespray.git kubespray
+cd kubespray/
+git checkout tags/v2.8.1 -b mocc
+cd ..
+git add kubespray/
+git commit -m "added kubespray"
+git push
+
+pip install -r kubespray/requirements.txt
+
+pip install ansible==2.6
+
+cp kubespray/inventory/sample/hosts.ini .
+declare -a IPS=(192.168.1.90 192.168.1.91 192.168.1.92)
+CONFIG_FILE=hosts.ini python3 kubespray/contrib/inventory_builder/inventory.py ${IPS[@]}
+# append node3 to kube-master
+nano hosts.ini
+
+
