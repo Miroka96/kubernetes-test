@@ -1,0 +1,20 @@
+pip install --upgrade ansible
+# ansible --version = 2.7.5
+
+ansible-playbook -i hosts.ini cc-webapp.yml
+
+kubectl -n meth get svc
+# NAME                  TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+# cc-backend-service    ClusterIP   10.233.28.235   <none>        80/TCP         3m48s
+# cc-frontend-service   NodePort    10.233.50.116   <none>        80:31244/TCP   3m46s
+
+curl --head http://node1:31244/
+# HTTP/1.1 200 OK
+# Server: nginx/1.15.8
+# Date: Thu, 10 Jan 2019 17:08:01 GMT
+# Content-Type: application/octet-stream
+# Content-Length: 111
+# Connection: keep-alive
+# CC-Backend-Server: nginx-backend-75565c9758-nv2hg
+# CC-Frontend-Server: nginx-frontend-67cfddc794-psdgb
+
