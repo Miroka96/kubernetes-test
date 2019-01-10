@@ -1,0 +1,6 @@
+docker build -t kub-frontend-nginx -f frontend.Dockerfile .
+docker tag kub-frontend-nginx aweltzien/mocc-nginx-frontend:1
+docker push aweltzien/mocc-nginx-frontend:1
+docker build -t kub-backend-nginx -f backend.Dockerfile .
+docker tag kub-backend-nginx aweltzien/mocc-nginx-backend:1
+docker push aweltzien/mocc-nginx-backend:1
