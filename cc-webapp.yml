@@ -61,6 +61,26 @@
                 image:  aweltzien/mocc-nginx-backend:1
                 ports:
                 - containerPort:  80
+                readinessProbe:
+                  httpGet:
+                    port: 80
+                    path: /ready
+                    scheme: HTTP
+                    httpHeaders:
+                    - name: CC-Ready
+                      value:  Backend
+                  periodSeconds:  1
+                  initialDelaySeconds:  1
+                livenessProbe:
+                  httpGet:
+                    port: 80
+                    path: /ready
+                    scheme: HTTP
+                    httpHeaders:
+                    - name: CC-Ready
+                      value:  Backend
+                  periodSeconds:  1
+                  initialDelaySeconds:  5
   - name:   "create frontend service"
     k8s:
       state:  present
@@ -111,3 +131,23 @@
                 image:  aweltzien/mocc-nginx-frontend:1
                 ports:
                 - containerPort:  80
+                readinessProbe:
+                  httpGet:
+                    port: 80
+                    path: /ready
+                    scheme: HTTP
+                    httpHeaders:
+                    - name: CC-Ready
+                      value:  Frontend
+                  periodSeconds:  1
+                  initialDelaySeconds:  1
+                livenessProbe:
+                  httpGet:
+                    port: 80
+                    path: /ready
+                    scheme: HTTP
+                    httpHeaders:
+                    - name: CC-Ready
+                      value:  Frontend
+                  periodSeconds:  1
+                  initialDelaySeconds:  5
