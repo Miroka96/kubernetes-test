@@ -49,4 +49,20 @@ sudo apt install virtualbox virtualbox-ext-pack
 #   - sudo sed -i "s/preserve_hostname: false/preserve_hostname: true/g" /etc/cloud/cloud.cfg
 
 # back on the host:
+cp -r kubespray/inventory/sample/group_vars .
 ansible-playbook -i hosts.ini --become --become-user=root kubespray/cluster.yml
+
+ssh meth@192.168.1.90
+## on one of the (master) nodes
+# become root (only root owns a valid kubeconfig) or at least get its environment
+sudo -i kubectl config view --raw > kubeconfig
+# copy the kubeconfig to any wanted system, e.g. the workstation, into ~/.kube/config
+
+kubectl cluster-info
+# Kubernetes master is running at https://192.168.1.90:6443
+# coredns is running at https://192.168.1.90:6443/api/v1/namespaces/kube-system/services/coredns:dns/proxy
+# kubernetes-dashboard is running at https://192.168.1.90:6443/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy
+#
+# To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+
+# kubernetes is fully working now
